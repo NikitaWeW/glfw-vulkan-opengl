@@ -1,49 +1,61 @@
 #include <glad\glad.h>
-#include <GLFW/glfw3.h>
+#include <GLFW\glfw3.h>
 
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
+#include <thread>
 
-class HelloTriangleApplication {
+class TriangleApplication {
 public:
     void run() {
         initWindow();
+        initOpengl();
         mainLoop();
         cleanup();
     }
 
 private:
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 600;
     GLFWwindow* window;
 
+    void initOpengl() {
+        std::cout << "gladLoadGLLoader: " << gladLoadGLLoader((GLADloadproc) glfwGetProcAddress) << '\n';
+    }
+
     void initWindow() {
-        glfwInit();
+        std::cout << "glfwInit: " << glfwInit() << '\n';
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL", nullptr, nullptr);
+        window = glfwCreateWindow(640, 480, "OpenGL", nullptr, nullptr);
+
+        glfwMakeContextCurrent(window);
+
     }
     void mainLoop() {
+        int iteration = 0;
         while(!glfwWindowShouldClose(window)) {
-            glfwMakeContextCurrent(window);
-
-            glOrtho(0, 640, 480, 0, -1, 1);
-            std::cout << "loop";
-            
-            glClearColor(1,1,0,0);
+            std::cout << "loop " << iteration << "| glGetError: " << glGetError() << '\n';
 
             glClear(GL_COLOR_BUFFER_BIT);
-            
+
             glBegin(GL_TRIANGLES);
-            glVertex2d(-2, -1);
-            glVertex2d(2, -1);
+
+            glColor3d(1, 0, 0);
+            glVertex2d(-1, -1);
+            glColor3d(0, 1, 0);
+            glVertex2d(1, -1);
+            glColor3d(0, 0, 1);
             glVertex2d(0, 1);
+
             glEnd();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+            iteration++;
+
+            _sleep(1000);
         }
     }
 
@@ -51,11 +63,13 @@ private:
         glfwDestroyWindow(window);
 
         glfwTerminate();
+        
+        std::cout << "\ncleanup completed.\n";
     }
 };
 
 int main() {
-    HelloTriangleApplication app;
+    TriangleApplication app;
 
     try {
         app.run();
