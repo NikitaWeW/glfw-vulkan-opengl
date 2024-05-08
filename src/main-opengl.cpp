@@ -20,12 +20,14 @@ private:
 
     void initOpengl() {
         std::cout << "gladLoadGLLoader: " << gladLoadGLLoader((GLADloadproc) glfwGetProcAddress) << '\n';
+
+        std::cout << "gl version: " << glGetString(GL_VERSION) << '\n' << '\n';
     }
 
     void initWindow() {
         std::cout << "glfwInit: " << glfwInit() << '\n';
 
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
         window = glfwCreateWindow(640, 480, "OpenGL", nullptr, nullptr);
 
@@ -35,18 +37,13 @@ private:
     void mainLoop() {
         int iteration = 0;
         while(!glfwWindowShouldClose(window)) {
-            std::cout << "loop " << iteration << "| glGetError: " << glGetError() << '\n';
-
-            glClear(GL_COLOR_BUFFER_BIT);
+            std::cout << "loop " << iteration << " | gl error: " << glGetError() << '\n';
 
             glBegin(GL_TRIANGLES);
 
-            glColor3d(1, 0, 0);
-            glVertex2d(-1, -1);
-            glColor3d(0, 1, 0);
-            glVertex2d(1, -1);
-            glColor3d(0, 0, 1);
-            glVertex2d(0, 1);
+            glColor3d(1, 0, 0); glVertex2d(-0.5, -0.5);
+            glColor3d(0, 1, 0); glVertex2d(0.5, -0.5);
+            glColor3d(0, 0, 1); glVertex2d(0, 0.5);
 
             glEnd();
 
@@ -55,7 +52,7 @@ private:
 
             iteration++;
 
-            _sleep(1000);
+            _sleep(1);
         }
     }
 
