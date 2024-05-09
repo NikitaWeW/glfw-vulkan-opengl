@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.29)
 
 project(glfw-vulkan-opengl)
 
-set(main_path src/main-opengl.cpp)
+set(main_path src/main-glm.cpp)
 
 add_executable(${PROJECT_NAME} ${main_path})
 
