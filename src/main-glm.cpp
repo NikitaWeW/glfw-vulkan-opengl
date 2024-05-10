@@ -16,4 +16,6 @@ int main(void) {
     std::cout << "a - b:\t" << "x: " << (a - b).x << ", y: " << (a - b).y << ", z: " << (a - b).z << '\n';
     std::cout << "a * b:\t" << "x: " << (a * b).x << ", y: " << (a * b).y << ", z: " << (a * b).z << '\n';
     std::cout << "a / b:\t" << "x: " << (a / b).x << ", y: " << (a / b).y << ", z: " << (a / b).z << '\n';
+
+    std::cin.get();
 }

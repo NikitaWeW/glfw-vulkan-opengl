@@ -1,4 +1,4 @@
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <KHR/khrplatform.h>
 #include <GLFW/glfw3.h>
 
