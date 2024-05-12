@@ -9,61 +9,59 @@
 class HelloTriangleApplication {
 public:
     void run() {
-        initWindow();
-        initVulkan();
+        initGLFW();
+        createVulkanInstance();
+        createWindow();
+
         mainLoop();
+
         cleanup();
     }
 
 private:
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 600;
     GLFWwindow* window;
     VkInstance instance;
 
-    void initWindow() {
+    void initGLFW() {
         glfwInitVulkanLoader(vkGetInstanceProcAddr);
-        glfwInit();
+        std::cout << "glfw init result (bool): " << glfwInit() << '\n';
+    }
+    void createVulkanInstance() {
+        VkApplicationInfo appInfo = {};
+            appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+            appInfo.apiVersion = VK_API_VERSION_1_3;
+
+        const char* instanceExtenstions[2] = { "VK_KHR_surface", "VK_KHR_win32_surface" };
+        const char* enabledLayers[1] = { "VK_LAYER_KHRONOS_validation" };
+
+        VkInstanceCreateInfo createInfo = {};
+            createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+            createInfo.pApplicationInfo = &appInfo;
+            createInfo.enabledExtensionCount = 2;
+            createInfo.ppEnabledExtensionNames = instanceExtenstions;
+            createInfo.enabledLayerCount = 1;
+            createInfo.ppEnabledLayerNames = enabledLayers;
+
+        VkResult instanceResult = vkCreateInstance(&createInfo, nullptr, &instance);
+            std::cout << "vk instance result (bool): " << (instanceResult == VK_SUCCESS) << '\n';
+            if(instanceResult != VK_SUCCESS) throw std::exception();
+    }
+    void createWindow() {
+        if(window) glfwSetWindowShouldClose(window, GLFW_TRUE); //window exists
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-    }
-    void initVulkan() {
-        createInstance();
-    }
-    void createInstance() {
-        VkApplicationInfo appInfo{};
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Hello Triangle";
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "No Engine";
-        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_0;
-
-        VkInstanceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
-
-        uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions;
-
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-        createInfo.enabledExtensionCount = glfwExtensionCount;
-        createInfo.ppEnabledExtensionNames = glfwExtensions;
-
-        createInfo.enabledLayerCount = 0;
-
-        VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-        if(result != VK_SUCCESS) throw std::runtime_error("failed to create instance");
+        window = glfwCreateWindow(640, 480, "Vulkan", nullptr, nullptr);
+        std::cout << "window: " << window << '\n';
+        if(!window) throw std::exception();
     }
 
     void mainLoop() {
         while(!glfwWindowShouldClose(window)) {
             glfwPollEvents();
         }
+        std::cout << "window closed" << '\n';
     }
 
     void cleanup() {
@@ -72,15 +70,16 @@ private:
         glfwDestroyWindow(window);
 
         glfwTerminate();
+
+        std::cout << "cleanup sucsessful" << '\n';
     }
 };
 
 int main() {
     HelloTriangleApplication app;
 
-    try {
-        app.run();
-    } catch (const std::exception& e) {
+    try { app.run(); } 
+    catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
